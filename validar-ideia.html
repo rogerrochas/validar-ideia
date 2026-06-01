@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Validador de Ideia — Aplicativos Virais</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --a:#7c3aed;--al:#f5f3ff;--at:#5b21b6;
+  --bg:#fafafa;--card:#fff;--border:#e5e7eb;--bs:#d1d5db;
+  --text:#111827;--muted:#6b7280;--surface:#f3f4f6;--r:10px;
+  --green:#16a34a;--gl:#dcfce7;--gb:#86efac;
+  --orange:#ea580c;--ol:#fff7ed;--ob:#fdba74;
+  --red:#dc2626;--rl:#fef2f2;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0f0f11;--card:#1a1a1f;--border:#2d2d35;--bs:#3d3d48;--text:#f9fafb;--muted:#9ca3af;--surface:#1f1f26;--al:#1e1b4b;--at:#a5b4fc;}
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.page{max-width:760px;margin:0 auto;padding:24px 20px 60px}
+.header{padding:0 0 20px;border-bottom:1px solid var(--border);margin-bottom:24px}
+.header h1{font-size:20px;font-weight:600;display:flex;align-items:center;gap:10px}
+.header p{font-size:13px;color:var(--muted);margin-top:4px}
+.badge{background:var(--al);color:var(--at);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+
+.steps-wrap{overflow-x:auto;padding-bottom:4px;margin-bottom:6px}
+.steps{display:flex;gap:6px;white-space:nowrap;min-width:max-content}
+.sbtn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);font-family:'Inter',sans-serif;transition:all .15s}
+.sbtn:hover{border-color:var(--a);color:var(--a)}
+.sbtn.active{background:var(--a);border-color:var(--a);color:#fff}
+.sbtn.done{background:var(--al);border-color:var(--a);color:var(--at)}
+.snum{width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2)}
+.sbtn:not(.active):not(.done) .snum{background:var(--surface)}
+.sbtn.done .snum{background:var(--a);color:#fff}
+
+.progress{height:3px;background:var(--border);border-radius:2px;margin:10px 0 24px;overflow:hidden}
+.pf{height:100%;background:var(--a);border-radius:2px;transition:width .4s ease}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:16px}
+.ctitle{font-size:15px;font-weight:600;margin-bottom:4px}
+.cdesc{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.csub{font-size:11px;color:var(--a);background:var(--al);padding:8px 12px;border-radius:7px;border:1px solid rgba(124,58,237,.2);margin-bottom:16px;line-height:1.5}
+.csub strong{display:block;font-weight:600;margin-bottom:2px}
+
+.field{margin-bottom:18px}
+.field:last-child{margin-bottom:0}
+.label{display:block;font-size:13px;font-weight:500;margin-bottom:5px}
+.hint{font-size:11px;color:var(--muted);margin-bottom:6px;line-height:1.5}
+input[type=text],textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--bs);background:var(--bg);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border .15s;line-height:1.5}
+input[type=text]:focus,textarea:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+textarea{resize:vertical}
+
+.sg{display:grid;gap:8px}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:500px){.g2,.g3{grid-template-columns:1fr}}
+.sc{padding:11px 14px;border-radius:8px;cursor:pointer;border:1px solid var(--border);background:var(--card);transition:all .15s;user-select:none}
+.sc:hover{border-color:var(--a)}
+.sc.sel{border:2px solid var(--a);background:var(--al)}
+.sct{display:flex;align-items:center;gap:8px}
+.dot{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--bs);flex-shrink:0;transition:all .15s}
+.sc.sel .dot{background:var(--a);border-color:var(--a)}
+.scl{font-size:13px;font-weight:500}
+.sc.sel .scl{color:var(--at)}
+.scd{font-size:11px;color:var(--muted);margin-top:4px;margin-left:23px;line-height:1.4}
+.sc.sel .scd{color:var(--at);opacity:.75}
+
+.conc-card{background:var(--surface);border-radius:var(--r);padding:16px;margin-bottom:14px;border:1px solid var(--border)}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.cn{width:24px;height:24px;border-radius:50%;background:var(--a);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:500px){.grid2{grid-template-columns:1fr}}
+
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:4px;gap:12px}
+.nc{display:flex;align-items:center;gap:10px;flex:1;justify-content:center}
+.ni{font-size:12px;color:var(--muted)}
+.btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;border:1px solid var(--border);background:var(--card);color:var(--text)}
+.btn:hover{background:var(--surface)}
+.btn:disabled{opacity:.3;cursor:default;pointer-events:none}
+.btna{background:var(--a);border-color:var(--a);color:#fff}
+.btna:hover{opacity:.88}
+.btng{border:none;background:none;color:var(--muted);font-size:12px;padding:8px 12px;cursor:pointer;font-family:'Inter',sans-serif}
+.btng:hover{color:var(--text)}
+.toast{font-size:11px;padding:5px 10px;border-radius:6px;background:var(--gl);color:var(--green);border:1px solid var(--gb)}
+
+.bbox{background:var(--surface);border-radius:var(--r);padding:16px;font-family:monospace;font-size:11.5px;color:var(--text);line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:500px;overflow-y:auto;border:1px solid var(--border)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tip{font-size:12px;color:var(--muted);padding:10px 14px;background:var(--al);border-radius:8px;border:1px solid rgba(124,58,237,.2);line-height:1.6;margin-top:10px}
+
+.score-preview{background:var(--surface);border-radius:var(--r);padding:16px;border:1px solid var(--border);margin-bottom:16px}
+.score-preview h3{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text)}
+.score-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.score-item:last-child{border-bottom:none}
+.score-label{font-size:12px;color:var(--muted)}
+.score-val{font-size:13px;font-weight:600;color:var(--a)}
+
+@media print{
+  .steps-wrap,.progress,.nav,.header,.acts,.tip{display:none!important}
+  .card{border:none!important;padding:0!important}
+  .bbox{max-height:none!important;overflow:visible!important;font-size:11px!important}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <h1>💡 Validador de Ideia <span class="badge">Passo 1 de 2</span></h1>
+    <p>Valide se a ideia vale a pena → antes de partir para a Planilha de Features</p>
+  </div>
+  <div class="steps-wrap"><div class="steps" id="snav"></div></div>
+  <div class="progress"><div class="pf" id="prog"></div></div>
+  <div id="content"></div>
+  <div class="nav">
+    <button class="btn" id="bprev">← Anterior</button>
+    <div class="nc">
+      <span class="ni" id="ni"></span>
+      <button class="btng" onclick="saveLocal()">Salvar</button>
+      <span id="toast" style="display:none" class="toast">✓ Salvo</span>
+    </div>
+    <button class="btn btna" id="bnext">Próximo →</button>
+  </div>
+</div>
+
+<script>
+const STEPS=[
+  {id:1,icon:'💡',label:'A Ideia'},
+  {id:2,icon:'🔍',label:'Concorrentes'},
+  {id:3,icon:'🎯',label:'Validação'},
+  {id:4,icon:'🚀',label:'Potencial'},
+  {id:5,icon:'📊',label:'Resultado'},
+];
+
+const PAISES=['Brasil','Estados Unidos','Brasil + EUA','Global (vários países)'];
+const PLATS=['iOS (App Store)','Android (Play Store)','iOS + Android (ambos)'];
+const SIMPL=[
+  {id:'simples',l:'Simples',d:'3–5 telas, sem banco complexo, auth mínima'},
+  {id:'medio',l:'Médio',d:'6–10 telas, Firebase, auth por email'},
+  {id:'avancado',l:'Avançado',d:'10+ telas, IA, servidor, conteúdo complexo'},
+];
+const VIRAL=[
+  {id:'muito',l:'Alto',d:'Usuários naturalmente compartilham resultados'},
+  {id:'medio',l:'Médio',d:'Compartilhamento possível mas não natural'},
+  {id:'baixo',l:'Baixo',d:'App de uso pessoal, pouco compartilhamento'},
+];
+
+let S={
+  problema:'',senteDor:'',motivosDor:'',
+  temConcorrente:'',
+  c1nome:'',c1avaliações:'',c1social:'',c1seguidores:'',c1anuncios:'',
+  c2nome:'',c2avaliações:'',c2social:'',c2seguidores:'',c2anuncios:'',
+  c3nome:'',c3avaliações:'',c3social:'',c3seguidores:'',c3anuncios:'',
+  nicho:'',publico:'',ticket:'',pais:'',simplicidade:'',
+  viral:'',comoViral:'',plataforma:'',diferencialChave:'',
+};
+
+let step=1;
+
+function loadLocal(){try{const r=localStorage.getItem('vi_v1');if(r)S=JSON.parse(r);}catch{}}
+function saveLocal(){
+  try{localStorage.setItem('vi_v1',JSON.stringify(S));}catch{}
+  const t=document.getElementById('toast');
+  t.style.display='inline-block';setTimeout(()=>{t.style.display='none';},2000);
+}
+function set(k,v){S[k]=v;}
+function sel(k,v){S[k]=S[k]===v?'':v;render();}
+function esc(v){return(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function field(label,hint,inner){
+  return`<div class="field"><label class="label">${label}</label>${hint?`<p class="hint">${hint}</p>`:''}${inner}</div>`;
+}
+function inp(k,ph){return`<input type="text" value="${esc(S[k])}" placeholder="${ph}" onblur="set('${k}',this.value)">`;}
+function ta(k,ph,rows=3){return`<textarea rows="${rows}" placeholder="${ph}" onblur="set('${k}',this.value)">${esc(S[k])}</textarea>`;}
+function sc(k,val,label,desc){
+  const s=S[k]===val;
+  return`<div class="sc${s?' sel':''}" onclick="sel('${k}','${val.replace(/'/g,"\\'")}')">
+    <div class="sct"><span class="dot"></span><span class="scl">${label}</span></div>
+    ${desc?`<div class="scd">${desc}</div>`:''}
+  </div>`;
+}
+function scObj(k,obj){
+  const s=S[k]===obj.id;
+  return`<div class="sc${s?' sel':''}" onclick="sel('${k}','${obj.id}')">
+    <div class="sct"><span class="dot"></span><span class="scl">${obj.l}</span></div>
+    ${obj.d?`<div class="scd">${obj.d}</div>`:''}
+  </div>`;
+}
+
+function concBlock(n){
+  const p=`c${n}`;
+  return`<div class="conc-card">
+    <div class="ch"><span class="cn">${n}</span><span style="font-size:13px;font-weight:600">Concorrente ${n}</span></div>
+    ${field('Nome do app',null,inp(p+'nome','Ex: MyFitnessPal, Headspace...'))}
+    <div class="grid2">
+      ${field('Avaliações nas lojas','Total de reviews na App Store + Play Store',inp(p+'avaliações','Ex: 12.000 avaliações, 4.3★'))}
+      ${field('Roda anúncios?','Anúncios no Meta, TikTok ou Google?',`<div class="sg g3">
+        ${['Sim','Não','Não sei'].map(v=>sc(p+'anuncios',v,v,'')).join('')}
+      </div>`)}
+    </div>
+    <div class="grid2">
+      ${field('Tem rede social?',null,`<div class="sg g2">
+        ${['Sim','Não'].map(v=>sc(p+'social',v,v,'')).join('')}
+      </div>`)}
+      ${field('Seguidores (se tiver)',null,inp(p+'seguidores','Ex: 85k no Instagram, baixo engajamento'))}
+    </div>
+  </div>`;
+}
+
+function html1(){
+  return`<div class="card">
+    <p class="ctitle">A Ideia</p>
+    <p class="cdesc">Descreva o problema que você quer resolver. Seja honesto — a qualidade das respostas aqui define a qualidade da avaliação do Claude.</p>
+    ${field('Qual problema você viu no mundo real?','Descreva a situação. Não precisa ser a solução ainda — só o problema.',ta('problema','Ex: Pessoas em crise de ansiedade não têm onde buscar ajuda rápida no celular. Apps de meditação são lentos e exigem contexto...',4))}
+    ${field('Você mesmo sente essa dor? Ou conhece alguém que sente?',null,`<div class="sg g3">
+      ${sc('senteDor','sim_eu','Sim, eu sinto','')}
+      ${sc('senteDor','sim_conheco','Conheço alguém','')}
+      ${sc('senteDor','nao','Não diretamente','')}
+    </div>`)}
+    ${field('Conta mais sobre os motivos de querer criar o app para essa dor','Quanto mais contexto, mais precisa será a avaliação',ta('motivosDor','Ex: Passei por crises de pânico e não tinha para onde correr. Vi amigos com o mesmo problema. Sinto que os apps existentes são muito complexos para um momento de crise...',4))}
+  </div>`;
+}
+
+function html2(){
+  return`<div class="card">
+    <p class="ctitle">Pesquisa de Concorrentes</p>
+    <p class="cdesc">Antes de preencher, use as ferramentas abaixo para pesquisar. Não pule essa etapa — ela é a mais importante para validar o mercado.</p>
+    <div class="csub">
+      <strong>📖 Use a aula de Espionagem para encontrar concorrentes</strong>
+      Ferramentas recomendadas: <strong>App Store / Play Store</strong> (busca direta), <strong>appstoretracker.com</strong> (rankings e histórico), <strong>Mobbin</strong> (UI de apps), <strong>ScreensDesign</strong> (screenshots organizados)
+    </div>
+    ${field('Existe app no mercado resolvendo esse problema?',null,`<div class="sg g3">
+      ${sc('temConcorrente','sim','Sim — achei concorrentes','')}
+      ${sc('temConcorrente','parcial','Parcialmente — nada direto','')}
+      ${sc('temConcorrente','nao','Não achei nenhum','')}
+    </div>`)}
+    ${concBlock(1)}${concBlock(2)}${concBlock(3)}
+  </div>`;
+}
+
+function html3(){
+  return`<div class="card">
+    <p class="ctitle">Validação do Mercado</p>
+    <p class="cdesc">Defina o nicho, o público e o modelo financeiro da ideia.</p>
+    ${field('Qual nicho isso se encaixa?','Seja específico — nicho pequeno bem servido vale mais que nicho grande mal atendido',inp('nicho','Ex: Saúde mental feminina, Fitness para mães, Espiritualidade evangélica...'))}
+    ${field('Quem pagaria por isso?','Descreva o comportamento, não o perfil demográfico',ta('publico','Ex: Pessoa que já tenta meditar mas não mantém hábito. Que sente ansiedade em momentos inesperados e quer ajuda imediata...',3))}
+    ${field('Quanto essa pessoa pagaria?','Pense no ticket mensal viável para o público',`<div class="sg g2">
+      ${sc('ticket','ate5','Até R$10/mês','App simples, público amplo')}
+      ${sc('ticket','5a15','R$10 a R$30/mês','Nicho com dor real')}
+      ${sc('ticket','15a30','R$30 a R$60/mês','Solução de alto valor')}
+      ${sc('ticket','acima30','Acima de R$60/mês','B2B ou nicho premium')}
+    </div>`)}
+    ${field('Em qual país quer rodar o app?',null,`<div class="sg g2">${PAISES.map(p=>sc('pais',p,p,'')).join('')}</div>`)}
+    ${field('É simples o suficiente para um primeiro app?',null,`<div class="sg g3">${SIMPL.map(o=>scObj('simplicidade',o)).join('')}</div>`)}
+  </div>`;
+}
+
+function html4(){
+  return`<div class="card">
+    <p class="ctitle">Potencial Viral e Plataforma</p>
+    <p class="cdesc">Apps com alto potencial viral crescem organicamente. Avalie honestamente.</p>
+    ${field('Potencial viral',null,`<div class="sg g3">${VIRAL.map(o=>scObj('viral',o)).join('')}</div>`)}
+    ${field('Como as pessoas compartilhariam o app?','Se não consegue imaginar, o viral é baixo',ta('comoViral','Ex: Usuário gera um card com seu resultado e posta no Instagram. Ou: convida amigos para desafio...',3))}
+    ${field('Qual seria o diferencial chave na sua versão?','Em 1 frase — o que tornaria seu app diferente dos concorrentes',inp('diferencialChave','Ex: O único app de meditação com mascote interativo em português, focado em crises de pânico...'))}
+    ${field('Plataforma',null,`<div class="sg g3">${PLATS.map(p=>sc('plataforma',p,p,'')).join('')}</div>`)}
+  </div>`;
+}
+
+function genBriefing(){
+  return`# VALIDAÇÃO DE IDEIA DE APP
+Gerado em: ${new Date().toLocaleDateString('pt-BR')} via Validador de Ideia
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A IDEIA
+Problema identificado:
+${S.problema||'—'}
+
+Relação com a dor: ${S.senteDor==='sim_eu'?'O próprio criador sente essa dor':S.senteDor==='sim_conheco'?'Conhece pessoas que sentem':'Não tem contato direto com a dor'}
+
+Motivação:
+${S.motivosDor||'—'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONCORRENTES
+Nível de concorrência encontrado: ${S.temConcorrente==='sim'?'Mercado com concorrentes diretos':S.temConcorrente==='parcial'?'Mercado parcialmente atendido':'Nenhum concorrente encontrado'}
+
+[C1] ${S.c1nome||'—'}
+  Avaliações: ${S.c1avaliações||'—'}
+  Redes sociais: ${S.c1social==='Sim'?`Sim — ${S.c1seguidores||'seguidores não informados'}`:'Não tem / não encontrado'}
+  Roda anúncios: ${S.c1anuncios||'—'}
+
+[C2] ${S.c2nome||'—'}
+  Avaliações: ${S.c2avaliações||'—'}
+  Redes sociais: ${S.c2social==='Sim'?`Sim — ${S.c2seguidores||'seguidores não informados'}`:'Não tem / não encontrado'}
+  Roda anúncios: ${S.c2anuncios||'—'}
+
+[C3] ${S.c3nome||'—'}
+  Avaliações: ${S.c3avaliações||'—'}
+  Redes sociais: ${S.c3social==='Sim'?`Sim — ${S.c3seguidores||'seguidores não informados'}`:'Não tem / não encontrado'}
+  Roda anúncios: ${S.c3anuncios||'—'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VALIDAÇÃO
+Nicho: ${S.nicho||'—'}
+Público (comportamento): ${S.publico||'—'}
+Ticket estimado: ${S.ticket||'—'}
+País alvo: ${S.pais||'—'}
+Complexidade técnica: ${S.simplicidade||'—'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+POTENCIAL
+Potencial viral: ${S.viral||'—'}
+Como as pessoas compartilhariam: ${S.comoViral||'—'}
+Diferencial chave: ${S.diferencialChave||'—'}
+Plataforma: ${S.plataforma||'—'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ INSTRUÇÃO PARA O CLAUDE — LEIA ANTES DE RESPONDER
+
+Você é um especialista em produtos digitais e mercado de apps mobile.
+Leia o briefing acima com atenção.
+
+SUA PRIMEIRA RESPOSTA deve conter APENAS o scorecard abaixo — sem introdução, sem texto adicional antes dele:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 SCORECARD DA IDEIA: [nome do app ou "Ideia"]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Tamanho do mercado:        [0-10] — [1 linha de justificativa]
+2. Urgência / Dor do usuário: [0-10] — [1 linha de justificativa]  
+3. Janela competitiva:        [0-10] — [10 = pouca concorrência forte]
+4. Potencial viral:           [0-10] — [1 linha de justificativa]
+5. Viabilidade técnica:       [0-10] — [10 = muito simples de construir]
+
+TOTAL: [soma]/50  →  NOTA FINAL: [soma/5]/10
+
+🟢 AVANCE — Ideia validada, parta para a Planilha de Features
+🟡 AJUSTE — Potencial existe, mas há pontos críticos a resolver (liste quais)
+🔴 DESCARTE — Riscos altos demais para o momento (explique)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Após o scorecard, dê:
+- 3 pontos fortes da ideia
+- 3 riscos reais que o criador deve considerar
+- 1 sugestão de ângulo diferente se a nota for abaixo de 7`;
+}
+
+function html5(){
+  const b=genBriefing();
+  return`<div class="card">
+    <p class="ctitle">Resultado — Briefing para o Claude</p>
+    <p class="cdesc">Cole esse texto no Claude. A <strong>primeira resposta</strong> já vai trazer o scorecard completo com nota de 0 a 10 e veredicto: Avance, Ajuste ou Descarte.</p>
+    <div class="acts">
+      <button class="btn" onclick="copyB()">📋 Copiar briefing</button>
+      <button class="btn" onclick="window.print()">🖨️ Imprimir / PDF</button>
+      <button class="btn btna" onclick="window.open('https://claude.ai','_blank')">Abrir Claude ↗</button>
+    </div>
+    <div class="bbox" id="bx">${b.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    <p class="tip">💡 Fluxo completo: preencha este formulário → cole no Claude → receba o scorecard → se nota ≥ 7, parta para a <strong>Planilha de Features</strong> em planilha-appviral.vercel.app</p>
+  </div>`;
+}
+
+function copyB(){
+  const el=document.getElementById('bx');
+  if(el)navigator.clipboard.writeText(el.innerText);
+}
+
+function isDone(s){
+  if(s===1)return S.problema&&S.senteDor;
+  if(s===2)return S.c1nome||S.temConcorrente;
+  if(s===3)return S.nicho&&S.pais;
+  if(s===4)return S.viral&&S.plataforma;
+  return false;
+}
+
+function render(){
+  const pct=Math.round(((step-1)/(STEPS.length-1))*100);
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('ni').textContent=step+' / '+STEPS.length;
+  document.getElementById('bprev').disabled=step===1;
+
+  const nb=document.getElementById('bnext');
+  if(step===STEPS.length){
+    nb.textContent='Abrir Claude ↗';
+    nb.onclick=()=>window.open('https://claude.ai','_blank');
+  } else {
+    nb.textContent='Próximo →';
+    nb.onclick=()=>{saveLocal();step++;render();};
+  }
+  document.getElementById('bprev').onclick=()=>{if(step>1){step--;render();}};
+
+  const nav=STEPS.map(s=>{
+    const done=isDone(s.id)&&s.id!==step;
+    const active=s.id===step;
+    return`<button class="sbtn${active?' active':done?' done':''}" onclick="step=${s.id};render()">
+      <span class="snum">${done?'✓':s.id}</span>${s.icon} ${s.label}
+    </button>`;
+  }).join('');
+  document.getElementById('snav').innerHTML=nav;
+
+  let h='';
+  if(step===1)h=html1();
+  else if(step===2)h=html2();
+  else if(step===3)h=html3();
+  else if(step===4)h=html4();
+  else h=html5();
+  document.getElementById('content').innerHTML=h;
+}
+
+loadLocal();
+render();
+</script>
+</body>
+</html>
